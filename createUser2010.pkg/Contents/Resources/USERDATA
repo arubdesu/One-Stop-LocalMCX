@@ -1,0 +1,57 @@
+# Replace generic data with your own. Turn on additional features by changing the value(s) where desired 
+shortname=padmin
+longname="Point Admin"
+
+# leave as-is for next available uid(on a never-booted value it will be 501), Allowed UIDs are 100+
+# uid=501
+
+# leave blank for 20("staff")
+# gid=20
+
+# leave blank to use the default shell in Terminal, /bin/bash
+# shell="/bin/bash"
+ 
+# leave blank for that ironic 'marble of doom' user picture, /Library/User Pictures/Fun/Beach Ball.tif
+# pic="/Library/User Pictures/Fun/Beach Ball.tif"
+
+# uncomment to set password (not recommended since password is clear text)
+# if blank, it will use password hash file "password_hash"
+# password="mypassword"
+
+# guid, leave blank for auto gen
+# genUID=D4F8BFC9-8EC8-4645-A739-516F59571A2E
+  
+# home folder, leave default for /Users/%u
+# the following placeholder substitutions are currently supported
+#  %u substitute the shortname
+#  %n substitute the uid
+#  %l substitute the first letter of the shortname
+#  %L substitute the first letter of the shortname in uppercase
+# user_home=/Users/%u
+  
+# admin 
+# 1 - add to admin group
+# 0 - don't add to admin group
+admin=1
+
+# hide user
+# 1 - hide user from login window
+# 0 - don't hide user (default)
+hide_user=0
+
+# Create Local MCX admin in non-default node, with the same password - for full functionality, 'localMCXcontinued.pkg' is required to be installed after this .pkg
+# 1 - create, link
+# 0 - don't create (default)
+localmcx=1
+
+# switch on ARD for our user only
+# NOTICE: this could be improved by checking for the existence of the com.apple.RemoteManagement.plist file in /Library/Preferences before copying, but this may continue to work in the near future
+# 1 - turn ARD on for our user
+# 0 - leave ARD off (default)
+kick_ARD=1
+
+# switch on SSH for our user only - NOTICE: this assumes the created user is the default UID 501
+# WARNING: this enables ssh on port 22 by default, which may at the very least fill logs with failed login attempts. Searching the internet for modifying the ssh.plist further in order to change the port sshd listens on, in addition to techniques like port knocking and other restrictions are recommended, but not current enabled  
+# 1 - turn SSH on for our admin
+# 0 - leave SSH off (default)
+kick_SSH=1

@@ -1,0 +1,263 @@
+#!/bin/sh
+
+ME=$0
+SCRIPT_DIR="$1/Contents/Resources"
+TARGET_DIR="$3"
+
+#load vars
+. "${SCRIPT_DIR}/USERDATA"
+
+check_os()
+{
+	LEOPARD=1 # also covers Snow Leopard, since both use dslocal - Tiger no longer supported on host or destination, so we bail if we find it on either
+	OTHER=1
+
+	HOST_SW_VERS=`/usr/bin/defaults read "/System/Library/CoreServices/SystemVersion" ProductVersion`
+	if ( echo $HOST_SW_VERS | grep "^10.[56]">/dev/null ); then
+		HOST_LEOPARD=0
+	else
+		echo "OS $HOST_SW_VERS not supported"
+		exit 3
+	fi
+	
+	TARGET_SW_VERS=`/usr/bin/defaults read "${TARGET_DIR}/System/Library/CoreServices/SystemVersion" ProductVersion`
+	if ( echo $TARGET_SW_VERS | grep "^10.[56]">/dev/null ); then
+		LEOPARD=0
+	else
+		echo "OS $TARGET_SW_VERS not supported"
+		exit 3
+	fi
+	
+	# assigning variables, including setting SSH and MCX-specific ones
+	if [ $LEOPARD -eq 0 ]; then
+		DSLocalDB="${TARGET_DIR}/var/db/dslocal/nodes/Default"
+		LocalMCX_DB="${TARGET_DIR}/var/db/dslocal/nodes/MCX"
+	
+		if [ ! -e "$DSLocalDB" ]; then
+			echo "Can't find target ${DSLocalDB}"
+			exit 2
+		fi
+		
+		serviceCmd="/usr/bin/dscl -f"
+		dsNode=${DSLocalDB}
+		suffix="localonly"
+		groupKey="GroupMembership"
+	
+		uidKey="UniqueID"
+		databasePath="/Local/Target/"
+		userRoot="${databasePath}Users"
+		userPath="${userRoot}/${shortname}"
+		mcxAdminPath="${userRoot}/mcxadmin"
+		adminPath="${databasePath}Groups/admin"
+		sshAccessGroupPath="${databasePath}Groups/com.apple.access_ssh"
+		
+	else
+		echo "OS not supported"
+		exit 3
+	fi
+
+}
+
+check_uid()
+{
+	if [ ${#uid} -eq 0 ]; then
+		# search for unused uid after 500
+		for ((uid=501; uid<600; uid++)); do
+			output=`$serviceCmd $prefix "$dsNode" $suffix -search $userRoot $uidKey $uid`
+			if [ "$output" == "" ]; then
+				break
+			fi
+		done
+	fi 
+	
+	# make sure uid is only digits. We probably ought to test for valid uid ranges too. for now just 100+
+	if [ ! `echo $uid | grep -E "^[1-9][0-9]{2,9}$"` ] ; then
+		echo "Bad UID $uid"
+		exit 1
+	fi
+}
+
+check_shortname()
+{
+	# we're being extra safe here. shortname must be 1 to 31 alphanumeric characters (first is alpha).
+	if ! echo $shortname | grep -E "^[a-zA-Z_][a-zA-Z0-9_]{0,30}$">/dev/null ; then
+		echo "Bad shortname ${shortname:-(empty)}"
+		echo "Short name should only be lowercase letters or numbers (max 31 for simplicity)"
+		exit 1
+	fi
+	
+	SHORTNAME=`echo $shortname | tr "[:lower:]" "[:upper:]"`
+}
+
+check_password()
+{
+	# check for password_hash file
+	if [ -f "${SCRIPT_DIR}/password_hash" ]; then
+		password_hash=`cat "${SCRIPT_DIR}/password_hash"`
+	fi
+
+	if [ ${#password_hash} -ne 1240 ]; then
+		if [ ${#password} -lt 1 ]; then
+			echo "Invalid password"
+			exit 1
+		else 
+			# generate password hash
+			password_hash=`"${SCRIPT_DIR}/shadowHash" $password`
+		fi
+	fi
+}
+
+check_longname()
+{
+	# use shortname for longname if we didn't specify
+	if [ ${#longname} -eq 0 ]; then
+		longname=$shortname
+	fi
+}
+
+check_gid()
+{
+	if [ ${#gid} -eq 0 ]; then
+		gid=20
+	fi
+
+	# make sure gid is only digits. 
+	if [ ! `echo $gid | grep -E "^[0-9]+$"` ] ; then
+		echo "Bad GID $gid"
+		exit 1
+	fi
+}
+
+check_pic()
+{
+	if [ ${#pic} -eq 0 ]; then
+		pic="/Library/User Pictures/Fun/Beach Ball.tif"
+	fi
+}
+
+check_shell()
+{
+	if [ ${#shell} -eq 0 ]; then
+		shell="/bin/bash"
+	fi
+}
+
+check_home()
+{
+	if [ ${#user_home} -eq 0 ]; then
+		user_home="/Users/%u"
+	fi
+	
+	# substitute placeholders
+	user_home=`echo $user_home | sed -e "s/%u/${shortname}/" -e "s/%n/$uid/" -e "s/%l/${shortname:0:1}/" -e "s/%L/${SHORTNAME:0:1}/"`
+}
+
+check_os
+check_shortname
+check_password
+check_uid 
+check_gid
+check_pic
+check_shell
+check_home
+
+echo "Creating new user $shortname using: $serviceCmd $prefix $dsNode $suffix"
+# these are the commands needed to create a base user. it will bail out if the first command fails
+$serviceCmd "$dsNode" $suffix -create $userPath || exit 1
+$serviceCmd "$dsNode" $suffix -create $userPath realname "${longname}"
+$serviceCmd "$dsNode" $suffix -create $userPath gid ${gid}
+$serviceCmd "$dsNode" $suffix -create $userPath $uidKey ${uid}
+$serviceCmd "$dsNode" $suffix -create $userPath home "${user_home}"
+$serviceCmd "$dsNode" $suffix -merge $userPath authentication_authority ";ShadowHash;"
+$serviceCmd "$dsNode" $suffix -create $userPath picture "${pic}"
+$serviceCmd "$dsNode" $suffix -create $userPath passwd "*"
+$serviceCmd "$dsNode" $suffix -create $userPath shell "${shell}"
+
+# lookup/save generated uid
+if [ ${#genUID} -eq 36 ]; then
+	# save guid if we specified one
+	$serviceCmd "$dsNode" $suffix -create $userPath generateduid ${genUID}
+else 
+	# otherwise get the auto generated one 
+	genUID=`$serviceCmd "$dsNode" $suffix -read ${userPath} generateduid|awk '{print $2}'`
+fi
+
+# create shadow hash folder if necessary and set perms
+if [ ! -d "${TARGET_DIR}/var/db/shadow/hash" ]; then
+	/bin/mkdir -p "${TARGET_DIR}/var/db/shadow/hash"
+	/usr/sbin/chown -R 0:0 "${TARGET_DIR}/var/db/shadow"
+	/bin/chmod 700 "${TARGET_DIR}/var/db/shadow"
+fi 
+
+# create shadow hash file and set perms
+echo "$password_hash">"${TARGET_DIR}/var/db/shadow/hash/$genUID"
+/bin/chmod 600 "${TARGET_DIR}/var/db/shadow/hash/$genUID"
+
+# if admin flag is set, then add user to admin group
+if [ $admin -eq 1 ]; then
+	$serviceCmd "$dsNode" $suffix -merge $adminPath $groupKey "${shortname}"
+fi
+
+if [ $hide_user -eq 1 ]; then
+	/usr/bin/defaults write "${TARGET_DIR}/Library/Preferences/com.apple.loginwindow" HiddenUsersList -array-add $shortname
+fi
+
+if [ $localmcx -eq 1 ]; then
+
+	/bin/mkdir -p "$LocalMCX_DB/computers"
+	/bin/mkdir "$LocalMCX_DB/computergroups"
+	/usr/sbin/chown -R 0:0 $LocalMCX_DB
+	/bin/chmod 700 $LocalMCX_DB
+	
+	$serviceCmd $LocalMCX_DB $suffix -create $mcxAdminPath || exit 1
+	$serviceCmd $LocalMCX_DB $suffix -create $mcxAdminPath realname "MCX Admin"
+	$serviceCmd $LocalMCX_DB $suffix -create $mcxAdminPath gid 80 # only group necessary is admin, instead of default 'staff'
+	$serviceCmd $LocalMCX_DB $suffix -create $mcxAdminPath $uidKey 444
+	$serviceCmd $LocalMCX_DB $suffix -create $mcxAdminPath home "${TARGET_DIR}/tmp"
+	$serviceCmd $LocalMCX_DB $suffix -merge $mcxAdminPath authentication_authority ";ShadowHash;"
+	$serviceCmd $LocalMCX_DB $suffix -create $mcxAdminPath passwd "*"
+	$serviceCmd $LocalMCX_DB $suffix -create $mcxAdminPath shell "/dev/null"
+
+	# auto-generate a genuid for mcxadmin
+	MCXadminGenUID=`$serviceCmd $LocalMCX_DB $suffix -read $mcxAdminPath generateduid|awk '{print $2}'`
+
+	# use same password for mcxadmin's shadow hash file and set perms
+	echo "$password_hash">"${TARGET_DIR}/var/db/shadow/hash/$MCXadminGenUID"
+	/bin/chmod 600 "${TARGET_DIR}/var/db/shadow/hash/$MCXadminGenUID"
+
+	# hide mcxadmin
+	/usr/bin/defaults write "${TARGET_DIR}/Library/Preferences/com.apple.loginwindow" HiddenUsersList -array-add mcxadmin
+
+fi
+
+if [ $kick_ARD -eq 1 ]; then
+
+	# use the 'kickstart' function of the apple remote desktop agent app bundle to turn full access on for the just-created admin
+	KICKSTRT="/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart"
+	$KICKSTRT -configure -allowAccessFor -specifiedUsers -targetdisk ${TARGET_DIR}
+	sleep 1
+	$KICKSTRT -activate -configure -users $shortname -privs -all -access -on -restart -agent -targetdisk ${TARGET_DIR}
+	# fix ARD so all other users have ARD turned off with privileges; plist wouldn't exist at this stage normally, so we shove one in
+	cp "${SCRIPT_DIR}/com.apple.RemoteManagement.plist" "${TARGET_DIR}/Library/Preferences"
+
+fi
+
+if [ $kick_SSH -eq 1 ]; then
+
+	# wipe the disabled launchd key in the ssh.plist on the target to allow launchctl to load it
+	/usr/libexec/PlistBuddy -c "Delete Disabled" "${TARGET_DIR}/System/Library/LaunchDaemons/ssh.plist"
+	# make the ssh group
+	$serviceCmd "$dsNode" $suffix -create $sshAccessGroupPath || exit 1
+	$serviceCmd "$dsNode" $suffix -create $sshAccessGroupPath realname "Remote Login ACL"
+	$serviceCmd "$dsNode" $suffix -create $sshAccessGroupPath gid 404
+	# add our user to the ssh group
+	$serviceCmd "$dsNode" $suffix -merge $sshAccessGroupPath $groupKey "${shortname}"
+fi
+
+# since it makes sense to include this, first we turn off the setup assistant, then the(admittedly older-style) prompt for registration
+
+touch "$3/private/var/db/.AppleSetupDone"
+touch "$3/Library/Receipts/.SetupRegComplete"
+
+
+exit 0
