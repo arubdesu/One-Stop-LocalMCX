@@ -1,0 +1,7 @@
+These are two payload-free packages which (when configured) enable distributing LocalMCX management at the computergroup level.  Currently these are both tailored to a modular, package-based image building system like InstaDMG, but the principles could be used to roll out LocalMCX management for an environment that has already deployed the workstations they would like to manage.
+
+The createUser2010 package (optionally) sets up a second dslocal node/directory for MCX settings, and adds a user in that node as per Greg Neagle's guidance so Workgroup Manager can be used.  Also optional is the changes required to turn on SSH and ARD for the created user (and that user only).
+
+The LocalMCX-starter package puts a single piece of management in place and uses (an admittedly rough at the moment) LaunchD-called script to bootstrap applying that management to whichever workstation the image is applied to.
+
+Originally described at length over time here, These packages originate from applying techniques documented by Greg Neagle(which evolved from conversations on AFP548.com and the MacEnterprise list, including Karl Kuehn and Nigel Kirsten) and Pete Akins(with the U of Cincinatti staff).  <Sir Issac Newton quote goes here>

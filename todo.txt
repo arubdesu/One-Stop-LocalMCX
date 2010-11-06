@@ -1,0 +1,5 @@
+- Change defaults calls to use PlistBuddy (and update the path when apple moves it out of libexec!)
+- Use crankd for firstboot detecting MAC address is up so the computer record can be more reliably updated and management is applied
+
+- rewrite createUser in heretofore undecided scripting language
+- put GUI on USERDATA = choices file creation
