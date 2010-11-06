@@ -1,6 +1,6 @@
 # Replace generic data with your own. Turn on additional features by changing the value(s) where desired 
-shortname=padmin
-longname="Point Admin"
+shortname=ladmin
+longname="Local Admin"
 
 # leave as-is for next available uid(on a never-booted value it will be 501), Allowed UIDs are 100+
 # uid=501
