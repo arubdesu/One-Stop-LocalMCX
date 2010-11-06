@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Define directory variables.
+
+PKG_DIR="$1/Contents/Resources"
+SCRIPTS_DIR="$3/Library/Scripts/Admin-Added"
+LAUNCHD_DIR="$3/Library/LaunchDaemons"
+LocalMCX_DB="$3/var/db/dslocal/nodes/MCX"
+
+# get our launchd job loaded into the right directories
+cp -v "${PKG_DIR}/com.afp548.LocalMCX-fixSearchPath.plist" $LAUNCHD_DIR
+cp -v "${PKG_DIR}/LocalMCX-fixSearchPath.sh" $SCRIPTS_DIR
+cp -v "${PKG_DIR}/com.afp548.localMCX-fixMACaddy.plist" $LAUNCHD_DIR
+cp -v "${PKG_DIR}/fixComputerRecord.sh" $SCRIPTS_DIR
+cp -v "${PKG_DIR}/com.afp548.networkingUp.plist" "$3/Library/LaunchAgents"
+cp -v "${PKG_DIR}/networkCheckers.py" $SCRIPTS_DIR
+
+# move all of our management policies and associated records into the right places
+ditto -V "${PKG_DIR}/computergroups" "${LocalMCX_DB}/computergroups"
+ditto -V "${PKG_DIR}/computers" "${LocalMCX_DB}/computers"
+
+exit 0

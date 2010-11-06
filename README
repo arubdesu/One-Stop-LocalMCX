@@ -4,4 +4,4 @@ The createUser2010 package (optionally) sets up a second dslocal node/directory 
 
 The LocalMCX-starter package puts a single piece of management in place and uses (an admittedly rough at the moment) LaunchD-called script to bootstrap applying that management to whichever workstation the image is applied to.
 
-Described at length on Greg Neagle's blog (most recently http://managingosx.wordpress.com/2010/03/12/yet-again-with-the-local-mcx/ ), these  packages originate from applying techniques documented there (which evolved from conversations on AFP548.com and the MacEnterprise list, including Karl Kuehn and Nigel Kirsten) and Pete Akins(with the U of Cincinatti staff).  <Sir Issac Newton quote goes here>
+Described at length on Greg Neagle's blog (most recently http://managingosx.wordpress.com/2010/03/12/yet-again-with-the-local-mcx/ ), these packages originate from applying techniques documented there (which evolved from conversations on AFP548.com and the MacEnterprise list, with contributions by Karl Kuehn and Nigel Kirsten) and Peter Akins (with the University of Cincinnati staff).  <Sir Issac Newton quote goes here>
