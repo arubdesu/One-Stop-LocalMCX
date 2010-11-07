@@ -1,5 +1,7 @@
-- Change defaults calls to use PlistBuddy (and update the path when apple moves it out of libexec!)
+- Have the mcxadmin shadow hash softlink the createUser admin instead of copying twice, so they stay in sync
+- Change defaults calls to use PlistBuddy, still assuming it will hang around in libexec
+- Transition to using the Luggage for package building, therefore will be able to more transparently package.  End result will be cp'd or ditto'd files will instead be put into the payload, so we're following the commandments of packaging
 - Make LocalMCX-starter.pkg/Contents/Resources/networkcheckers.py much betterer, probably by using crankd for firstboot detection of the MAC address after networking is up, so the computer record can be more reliably updated
 
-- rewrite createUser in heretofore undecided scripting language
-- put GUI on USERDATA = choices file creation
+- rewrite createUser in heretofore undecided scripting language, if not via adopting Karl Kuehn's Python re-write
+- put GUI on USERDATA = choices file creation, if not via adopting Karl's InstallerChoicesHelper.app
