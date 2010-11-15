@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>computers</key>
+	<array>
+		<string>local_desktop</string>
+		<string>local_laptop</string>
+	</array>
+	<key>generateduid</key>
+	<array>
+		<string>C6CF184F-0F0F-4DB5-B8E2-50C77EF37C16</string>
+	</array>
+	<key>gid</key>
+	<array>
+		<string>1030</string>
+	</array>
+	<key>groupmembers</key>
+	<array>
+		<string>DD24623B-37E9-48EE-A726-D2F284921882</string>
+		<string>63A0C4D0-C3B6-486F-997F-4F9D68DEFAA8</string>
+	</array>
+	<key>mcx_flags</key>
+	<array>
+		<string>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+	&lt;key&gt;has_mcx_settings&lt;/key&gt;
+	&lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</string>
+	</array>
+	<key>mcx_settings</key>
+	<array>
+		<string>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+	&lt;key&gt;mcx_application_data&lt;/key&gt;
+	&lt;dict&gt;
+		&lt;key&gt;com.apple.loginwindow&lt;/key&gt;
+		&lt;dict&gt;
+			&lt;key&gt;Forced&lt;/key&gt;
+			&lt;array&gt;
+				&lt;dict&gt;
+					&lt;key&gt;mcx_preference_settings&lt;/key&gt;
+					&lt;dict&gt;
+						&lt;key&gt;AdminHostInfo&lt;/key&gt;
+						&lt;string&gt;HostName&lt;/string&gt;
+						&lt;key&gt;HideAdminUsers&lt;/key&gt;
+						&lt;false/&gt;
+						&lt;key&gt;HideLocalUsers&lt;/key&gt;
+						&lt;false/&gt;
+						&lt;key&gt;HideMobileAccounts&lt;/key&gt;
+						&lt;false/&gt;
+						&lt;key&gt;IncludeNetworkUser&lt;/key&gt;
+						&lt;false/&gt;
+						&lt;key&gt;LoginwindowText&lt;/key&gt;
+						&lt;string&gt;Managed Via LocalMCX&lt;/string&gt;
+						&lt;key&gt;RestartDisabled&lt;/key&gt;
+						&lt;false/&gt;
+						&lt;key&gt;SHOWFULLNAME&lt;/key&gt;
+						&lt;true/&gt;
+						&lt;key&gt;SHOWOTHERUSERS_MANAGED&lt;/key&gt;
+						&lt;true/&gt;
+						&lt;key&gt;ShutDownDisabled&lt;/key&gt;
+						&lt;false/&gt;
+						&lt;key&gt;mcx_UseLoginWindowText&lt;/key&gt;
+						&lt;true/&gt;
+					&lt;/dict&gt;
+				&lt;/dict&gt;
+			&lt;/array&gt;
+		&lt;/dict&gt;
+	&lt;/dict&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</string>
+	</array>
+	<key>name</key>
+	<array>
+		<string>login_window_show_textfieldsmessage</string>
+	</array>
+	<key>realname</key>
+	<array>
+		<string>login_window_show_textFields+message</string>
+	</array>
+	<key>users</key>
+	<array>
+		<string>local_desktop</string>
+		<string>local_laptop</string>
+	</array>
+</dict>
+</plist>
