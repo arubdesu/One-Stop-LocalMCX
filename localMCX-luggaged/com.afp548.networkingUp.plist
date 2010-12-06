@@ -11,7 +11,7 @@
         </array>
         <key>ProgramArguments</key>
         <array>
-			<string>/usr/bin/python</string>
+			<string>/usr/sbin/python</string>
 			<string>/usr/local/sbin/networkCheckers.py</string>
         </array>
 		<key>RunAtLoad</key>
