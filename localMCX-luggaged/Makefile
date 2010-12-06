@@ -4,7 +4,7 @@ REVERSE_DOMAIN=com.afp548.LocalMCX-starter.pkg
 PAYLOAD=pack-usr-local-sbin-networkCheckers.py \
 pack-Library-LaunchDaemons-com.afp548.localMCX-fixMACaddy.plist \
 pack-Library-LaunchDaemons-com.afp548.LocalMCX-fixSearchPath.plist \
-pack-Library-LaunchDaemons-com.afp548.networkingUp.plist \
+pack-Library-LaunchAgents-com.afp548.networkingUp.plist \
 pack-usr-local-sbin-fixComputerRecord.sh \
 pack-usr-local-sbin-LocalMCX-fixSearchPath.sh \
 pack-var-db-dslocal-nodes-MCX-computers-local_desktop.plist \
