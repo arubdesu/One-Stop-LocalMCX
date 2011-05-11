@@ -189,8 +189,8 @@ if [ ! -d "${TARGET_DIR}/var/db/shadow/hash" ]; then
 	/bin/chmod 700 "${TARGET_DIR}/var/db/shadow"
 fi 
 
-# create shadow hash file and set perms
-echo "$password_hash">"${TARGET_DIR}/var/db/shadow/hash/$genUID"
+# create shadow hash file(escaping the newline) and set perms
+`cat "${SCRIPT_DIR}/password_hash">"${TARGET_DIR}/var/db/shadow/hash/$genUID"`
 /bin/chmod 600 "${TARGET_DIR}/var/db/shadow/hash/$genUID"
 
 # if admin flag is set, then add user to admin group
