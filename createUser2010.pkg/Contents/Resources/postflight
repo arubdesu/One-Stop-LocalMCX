@@ -189,8 +189,8 @@ if [ ! -d "${TARGET_DIR}/var/db/shadow/hash" ]; then
 	/bin/chmod 700 "${TARGET_DIR}/var/db/shadow"
 fi 
 
-# create shadow hash file and set perms
-echo "$password_hash">"${TARGET_DIR}/var/db/shadow/hash/$genUID"
+# create shadow hash file(escaping newline) and set perms
+`cat "${SCRIPT_DIR}/password_hash">"${TARGET_DIR}/var/db/shadow/hash/$genUID"`
 /bin/chmod 600 "${TARGET_DIR}/var/db/shadow/hash/$genUID"
 
 # if admin flag is set, then add user to admin group
@@ -221,8 +221,8 @@ if [ $localmcx -eq 1 ]; then
 	# auto-generate a genuid for mcxadmin
 	MCXadminGenUID=`$serviceCmd $LocalMCX_DB $suffix -read $mcxAdminPath generateduid|awk '{print $2}'`
 
-	# use same password for mcxadmin's shadow hash file and set perms
-	echo "$password_hash">"${TARGET_DIR}/var/db/shadow/hash/$MCXadminGenUID"
+	# symlink admin's password to mcxadmin's shadow hash file to keep in sync and set perms
+	/bin/ln "${TARGET_DIR}/var/db/shadow/hash/$genUID" "${TARGET_DIR}/var/db/shadow/hash/$MCXadminGenUID"
 	/bin/chmod 600 "${TARGET_DIR}/var/db/shadow/hash/$MCXadminGenUID"
 
 	# hide mcxadmin
